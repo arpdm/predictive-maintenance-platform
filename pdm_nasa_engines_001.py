@@ -347,6 +347,7 @@ class EngineRUL:
         plt.ylim((0, 40000))
         plt.xlabel("Mach Number - [-]", fontsize=labelsize)
         plt.ylabel("Flight Altitude - [ft]", fontsize=labelsize)
+        plt.show()
 
     def generate_kde_estimations_of_flight_profile(self):
         """
