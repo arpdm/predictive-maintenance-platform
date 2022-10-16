@@ -10,10 +10,9 @@ from pandas import DataFrame
 from matplotlib import gridspec
 
 
-class DataPreprocessor:
-    
+class DataProcessor:
     def __init__(self):
-        print("Engine RUL Predictor.")
+        print("Process data for NASA's engines run-to-failure datasets")
 
     def load_hdf5_to_numpy_arr(self, file_name_hdf5):
         """
@@ -80,18 +79,27 @@ class DataPreprocessor:
 
         print("Operation time (sec): ", (time.process_time() - op_time))
 
-    
-    def custom_ts_multi_data_prep(dataset, target, start, end, window, horizon):
+    def custom_ts_multi_data_prep(x_data, y_data, start, end, window, horizon):
+        """
+        Create data used for model predictions.
+        x_data: numpy array of input data
+        y_data: numpy array of output (target) data
+        start: start index data provided
+        end: end index within data provided
+        window: number of points in history as input to model
+        horizon: number of points in future to predict the results
+        """
+
         X = []
         y = []
         start = start + window
         if end is None:
-            end = len(dataset) - horizon
+            end = len(x_data) - horizon
 
         for i in range(start, end):
-            indices = range(i-window, i)
-            X.append(dataset[indices])
+            indices = range(i - window, i)
+            X.append(x_data[indices])
 
-            indicey = range(i+1, i+1+horizon)
-            y.append(target[indicey])
+            indicey = range(i + 1, i + 1 + horizon)
+            y.append(y_data[indicey])
         return np.array(X), np.array(y)
