@@ -22,8 +22,10 @@ class DataProcessor:
         """
 
         op_time = time.process_time()
-
+        print("Test")
+        print(file_name_hdf5)
         with h5py.File(file_name_hdf5, "r") as hdf:
+            print("0")
 
             # Get the model development set
             self.w_dev = np.array(hdf.get("W_dev"))  # Scenario-descriptor operating conditions
@@ -32,14 +34,16 @@ class DataProcessor:
             self.t_dev = np.array(hdf.get("T_dev"))  # Engine heath parameters
             self.y_rul_dev = np.array(hdf.get("Y_dev"))  # Target output Y - RUL of engine unit
             self.aux_dev = np.array(hdf.get("A_dev"))  # Auxiliary data
+            print("1")
 
             # Get the model test set
-            self.w_test = np.array(hdf.get("W_dev"))  # Scenario-descriptor operating conditions
-            self.x_s_test = np.array(hdf.get("X_s_dev"))  # sensor measurements
-            self.x_v_test = np.array(hdf.get("X_v_dev"))  # Virtual sensors
-            self.t_test = np.array(hdf.get("T_dev"))  # Engine heath parameters
-            self.y_rul_test = np.array(hdf.get("Y_dev"))  # Target output Y - RUL of engine unit
-            self.aux_test = np.array(hdf.get("A_dev"))  # Auxiliary data
+            self.w_test = np.array(hdf.get("W_test"))  # Scenario-descriptor operating conditions
+            self.x_s_test = np.array(hdf.get("X_s_test"))  # sensor measurements
+            self.x_v_test = np.array(hdf.get("X_v_test"))  # Virtual sensors
+            self.t_test = np.array(hdf.get("T_test"))  # Engine heath parameters
+            self.y_rul_test = np.array(hdf.get("Y_test"))  # Target output Y - RUL of engine unit
+            self.aux_test = np.array(hdf.get("A_test"))  # Auxiliary data
+            print("2")
 
             # Get the variable names for each type of variable in the dataset
             self.w_var_names = np.array(hdf.get("W_var"))
@@ -47,6 +51,7 @@ class DataProcessor:
             self.x_v_var_names = np.array(hdf.get("X_v_var"))
             self.t_var_names = np.array(hdf.get("T_var"))
             self.aux_var_names = np.array(hdf.get("A_var"))
+            print("3")
 
             # from np.array to list dtype U4/U5
             self.w_var_names = list(np.array(self.w_var_names, dtype="U20"))
@@ -55,7 +60,7 @@ class DataProcessor:
             self.t_var_names = list(np.array(self.t_var_names, dtype="U20"))
             self.aux_var_names = list(np.array(self.aux_var_names, dtype="U20"))
 
-        # Create complete development and test set of each varaible type
+        #Create complete development and test set of each varaible type
         self.w = np.concatenate((self.w_dev, self.w_test), axis=0)
         self.x_s = np.concatenate((self.x_s_dev, self.x_s_test), axis=0)
         self.x_v = np.concatenate((self.x_v_dev, self.x_v_test), axis=0)
