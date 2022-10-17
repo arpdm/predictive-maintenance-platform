@@ -68,20 +68,25 @@ class DataProcessor:
         self.t = np.concatenate((self.t_dev, self.t_test), axis=0)
         self.y_rul = np.concatenate((self.y_rul_dev, self.y_rul_test), axis=0)
         self.aux = np.concatenate((self.aux_dev, self.aux_test), axis=0)
+        print("5")
 
         # Generate dataframes
         self.df_aux = DataFrame(data=self.aux, columns=self.aux_var_names)
+        print("6")
 
         self.df_t = DataFrame(data=self.t, columns=self.t_var_names)
         self.df_t["unit"] = self.df_aux["unit"].values
         self.df_t["cycle"] = self.df_aux["cycle"].values
         self.df_ts = self.df_t.drop_duplicates()
+        print("7")
 
-        self.df_w = DataFrame(data=self.w_dev, columns=self.w_var_names)
+        self.df_w = DataFrame(data=self.w, columns=self.w_var_names)
         self.df_w["unit"] = self.df_aux["unit"].values
+        print("8")
 
         self.df_x_s = DataFrame(data=self.x_s, columns=self.x_s_var_names)
         self.df_v_s = DataFrame(data=self.x_v, columns=self.x_v_var_names)
+        print("9")
 
         print("Operation time (sec): ", (time.process_time() - op_time))
 
