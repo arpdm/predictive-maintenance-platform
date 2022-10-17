@@ -22,10 +22,7 @@ class DataProcessor:
         """
 
         op_time = time.process_time()
-        print("Test")
-        print(file_name_hdf5)
         with h5py.File(file_name_hdf5, "r") as hdf:
-            print("0")
 
             # Get the model development set
             self.w_dev = np.array(hdf.get("W_dev"))  # Scenario-descriptor operating conditions
@@ -34,7 +31,6 @@ class DataProcessor:
             self.t_dev = np.array(hdf.get("T_dev"))  # Engine heath parameters
             self.y_rul_dev = np.array(hdf.get("Y_dev"))  # Target output Y - RUL of engine unit
             self.aux_dev = np.array(hdf.get("A_dev"))  # Auxiliary data
-            print("1")
 
             # Get the model test set
             self.w_test = np.array(hdf.get("W_test"))  # Scenario-descriptor operating conditions
@@ -43,7 +39,6 @@ class DataProcessor:
             self.t_test = np.array(hdf.get("T_test"))  # Engine heath parameters
             self.y_rul_test = np.array(hdf.get("Y_test"))  # Target output Y - RUL of engine unit
             self.aux_test = np.array(hdf.get("A_test"))  # Auxiliary data
-            print("2")
 
             # Get the variable names for each type of variable in the dataset
             self.w_var_names = np.array(hdf.get("W_var"))
@@ -51,7 +46,6 @@ class DataProcessor:
             self.x_v_var_names = np.array(hdf.get("X_v_var"))
             self.t_var_names = np.array(hdf.get("T_var"))
             self.aux_var_names = np.array(hdf.get("A_var"))
-            print("3")
 
             # from np.array to list dtype U4/U5
             self.w_var_names = list(np.array(self.w_var_names, dtype="U20"))
@@ -59,7 +53,6 @@ class DataProcessor:
             self.x_v_var_names = list(np.array(self.x_v_var_names, dtype="U20"))
             self.t_var_names = list(np.array(self.t_var_names, dtype="U20"))
             self.aux_var_names = list(np.array(self.aux_var_names, dtype="U20"))
-            print("4")
 
         #Create complete development and test set of each varaible type
         self.w = np.concatenate((self.w_dev, self.w_test), axis=0)
@@ -68,29 +61,24 @@ class DataProcessor:
         self.t = np.concatenate((self.t_dev, self.t_test), axis=0)
         self.y_rul = np.concatenate((self.y_rul_dev, self.y_rul_test), axis=0)
         self.aux = np.concatenate((self.aux_dev, self.aux_test), axis=0)
-        print("5")
 
         # Generate dataframes
         self.df_aux = DataFrame(data=self.aux, columns=self.aux_var_names)
-        print("6")
 
         self.df_t = DataFrame(data=self.t, columns=self.t_var_names)
         self.df_t["unit"] = self.df_aux["unit"].values
         self.df_t["cycle"] = self.df_aux["cycle"].values
         self.df_ts = self.df_t.drop_duplicates()
-        print("7")
 
         self.df_w = DataFrame(data=self.w, columns=self.w_var_names)
         self.df_w["unit"] = self.df_aux["unit"].values
-        print("8")
 
         self.df_x_s = DataFrame(data=self.x_s, columns=self.x_s_var_names)
         self.df_v_s = DataFrame(data=self.x_v, columns=self.x_v_var_names)
-        print("9")
 
         print("Operation time (sec): ", (time.process_time() - op_time))
 
-    def custom_ts_multi_data_prep(x_data, y_data, start, end, window, horizon):
+    def custom_ts_multi_data_prep(self, x_data, y_data, start, end, window, horizon):
         """
         Create data used for model predictions.
         x_data: numpy array of input data
