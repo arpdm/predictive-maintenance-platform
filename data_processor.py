@@ -59,6 +59,7 @@ class DataProcessor:
             self.x_v_var_names = list(np.array(self.x_v_var_names, dtype="U20"))
             self.t_var_names = list(np.array(self.t_var_names, dtype="U20"))
             self.aux_var_names = list(np.array(self.aux_var_names, dtype="U20"))
+            print("4")
 
         #Create complete development and test set of each varaible type
         self.w = np.concatenate((self.w_dev, self.w_test), axis=0)
