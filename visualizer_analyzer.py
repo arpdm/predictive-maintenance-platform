@@ -1,76 +1,7 @@
-import matplotlib
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-from matplotlib import gridspec
-
-PLOT_LBL_SIZE = 17
-COLOR_DIC_UNIT = {
-    "Unit 1": "C0",
-    "Unit 2": "C1",
-    "Unit 3": "C2",
-    "Unit 4": "C3",
-    "Unit 5": "C4",
-    "Unit 6": "C5",
-    "Unit 7": "C6",
-    "Unit 8": "C7",
-    "Unit 9": "C8",
-    "Unit 10": "C9",
-    "Unit 11": "C10",
-    "Unit 12": "C11",
-    "Unit 13": "C12",
-    "Unit 14": "C13",
-    "Unit 15": "C14",
-    "Unit 16": "C15",
-    "Unit 17": "C16",
-    "Unit 18": "C17",
-    "Unit 19": "C18",
-    "Unit 20": "C19",
-}
-
-
-class DataAV:
-    def __init__(self, df_aux, df_x_s, x_s_var_names, df_w, df_t, t_var_names, w_var_names, df_ts):
-        print("Data analyzer and visualizer.")
-
-        self.df_aux = df_aux
-        self.df_x_s = df_x_s
-        self.x_s_var_names = x_s_var_names
-        self.df_w = df_w
-        self.df_t = df_t
-        self.t_var_names = t_var_names
-        self.w_var_names = w_var_names
-        self.df_ts = df_ts
-
-    def get_engine_units_in_dataset(self):
-        print("Engine units in dataset: ", np.unique(self.df_aux["unit"]))
-
-    def plot_flight_classes(self):
-        """
-        Plot the engine units and their corresponding fligth class to
-        findout the durations of each fligth based on the class
-            Class 1 - Flight length (1-3) [h]
-            Class 2 - Flight length (3-5) [h]
-            Class 3 - Fligth length (5-7) [h]
-        """
-
-        plt.plot(self.df_aux.unit, self.df_aux.Fc, "o")
-        plt.tick_params(axis="x", labelsize=PLOT_LBL_SIZE)
-        plt.tick_params(axis="y", labelsize=PLOT_LBL_SIZE)
-        plt.xlabel("Unit # [-]", fontsize=PLOT_LBL_SIZE)
-        plt.ylabel("Flight Class # [-]", fontsize=PLOT_LBL_SIZE)
-        plt.show()
-
-    def show_engine_health_parameter_stats(self):
-        """
-        All the stats for engine degradation parameters.
-        """
-        print(self.df_ts.describe())
 
     def plot_df_single_color(self, data, variables, labels, size=12, labelsize=17, name=None):
         """
-        Generic utility function to generate plots on variaus data frames for one engine in dataset
+        Generic utility function to generate plots on variaus data frames for dataset
         Note: This function is taken from sample notebook provided by the dataset itself.
         """
 

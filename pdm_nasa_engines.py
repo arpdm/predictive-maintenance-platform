@@ -17,7 +17,7 @@
 """
 
 from tabnanny import verbose
-from data_processor import DataProcessor
+from enginge_data import DataProcessor
 from visualizer_analyzer import DataAV
 from google.colab import drive
 
@@ -112,10 +112,10 @@ class EngineRUL:
             ]
         )
 
-        self.model.compile(optimizer="adam", loss="rmse")
+        self.model.compile(optimizer="adam", loss="mse")
         self.model.summary()
 
-    def train_pdm_model(self, epochs=100, steps_per_epoch=100, validation_steps=50, verbose=1):
+    def train_pdm_model(self, epochs, steps_per_epoch, validation_steps, verbose):
         """
         Train the generate model based on provided epochs and steps.
         This function will also automatically generate the plot for loss history.
@@ -123,7 +123,12 @@ class EngineRUL:
 
         tf.keras.backend.clear_session()
         self.history = self.model.fit(
-            self.train_data, epochs, steps_per_epoch, self.val_data, validation_steps, verbose
+            x=self.train_data,
+            epochs=epochs,
+            steps_per_epoch=steps_per_epoch,
+            validation_data=self.val_data,
+            validation_steps=validation_steps,
+            verbose=verbose,
         )
         self.vs_an.plot_training_results_history(self.history)
 

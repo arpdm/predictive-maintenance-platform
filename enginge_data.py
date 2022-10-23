@@ -1,16 +1,11 @@
 import h5py
-import time
-import matplotlib
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 from pandas import DataFrame
-from matplotlib import gridspec
 
 
-class DataProcessor:
+class EnigineData:
     def __init__(self):
         print("Process data for NASA's engines run-to-failure datasets")
 
@@ -21,7 +16,6 @@ class DataProcessor:
         The dev set will be used for training the model and the test set will be used for evaluating and predictions.
         """
 
-        op_time = time.process_time()
         with h5py.File(file_name_hdf5, "r") as hdf:
 
             # Get the model development set
@@ -54,7 +48,7 @@ class DataProcessor:
             self.t_var_names = list(np.array(self.t_var_names, dtype="U20"))
             self.aux_var_names = list(np.array(self.aux_var_names, dtype="U20"))
 
-        #Create complete development and test set of each varaible type
+        # Create complete development and test set of each varaible type
         self.w = np.concatenate((self.w_dev, self.w_test), axis=0)
         self.x_s = np.concatenate((self.x_s_dev, self.x_s_test), axis=0)
         self.x_v = np.concatenate((self.x_v_dev, self.x_v_test), axis=0)
@@ -64,19 +58,37 @@ class DataProcessor:
 
         # Generate dataframes
         self.df_aux = DataFrame(data=self.aux, columns=self.aux_var_names)
-
+        self.df_x_s = DataFrame(data=self.x_s, columns=self.x_s_var_names)
+        self.df_v_s = DataFrame(data=self.x_v, columns=self.x_v_var_names)
         self.df_t = DataFrame(data=self.t, columns=self.t_var_names)
         self.df_t["unit"] = self.df_aux["unit"].values
         self.df_t["cycle"] = self.df_aux["cycle"].values
         self.df_ts = self.df_t.drop_duplicates()
-
         self.df_w = DataFrame(data=self.w, columns=self.w_var_names)
         self.df_w["unit"] = self.df_aux["unit"].values
 
-        self.df_x_s = DataFrame(data=self.x_s, columns=self.x_s_var_names)
-        self.df_v_s = DataFrame(data=self.x_v, columns=self.x_v_var_names)
+        self.generate_training_and_test_dataframes()
 
-        print("Operation time (sec): ", (time.process_time() - op_time))
+    def generate_training_and_test_dataframes(self):
+
+        self.df_rul_train = pd.DataFrame(data=self.y_rul_dev, columns=["RUL"])
+        self.df_rul_test = pd.DataFrame(data=self.y_rul_test, columns=["RUL"])
+        self.df_x_s_train = pd.DataFrame(data=self.x_s_dev, columns=self.x_s_var_names)
+        self.df_x_s_test = pd.DataFrame(data=self.x_s_test, columns=self.x_s_var_names)
+        self.df_x_v_train = pd.DataFrame(data=self.x_v_dev, columns=self.x_v_var_names)
+        self.df_x_v_test = pd.DataFrame(data=self.x_v_test, columns=self.x_v_var_names)
+        self.df_aux_test = pd.DataFrame(data=self.aux_test, columns=self.aux_var_names)
+        self.df_aux_train = pd.DataFrame(data=self.aux_dev, columns=self.aux_var_names)
+        self.df_w_test = pd.DataFrame(data=self.w_test, columns=self.w_var_names)
+        self.df_w_train = pd.DataFrame(data=self.w_dev, columns=self.w_var_names)
+
+        self.df_x_s_train["cycle"] = self.df_aux_train["cycle"].values
+        self.df_x_s_train["RUL"] = self.df_rul_train.values
+        self.df_x_s_train["id"] = self.df_aux_train["unit"].values
+
+        self.df_x_s_test["cycle"] = self.df_aux_test["cycle"].values
+        self.df_x_s_test["RUL"] = self.df_rul_test.values
+        self.df_x_s_test["id"] = self.df_aux_test["unit"].values
 
     def custom_ts_multi_data_prep(self, x_data, y_data, start, end, window, horizon):
         """
@@ -102,3 +114,39 @@ class DataProcessor:
             indicey = range(i + 1, i + 1 + horizon)
             y.append(y_data[indicey])
         return np.array(X), np.array(y)
+
+    def gen_sequence(self, id_df, seq_length, seq_cols):
+        """
+        Generate network input sequence used for training.
+        id_df : Dataframe for specific Engine Id
+        seq_length : The window of time in history to be fed into the network
+        seq_cols: Features in dataframe to be included in training
+        """
+
+        df_zeros = pd.DataFrame(np.zeros((seq_length - 1, id_df.shape[1])), columns=id_df.columns)
+        id_df = df_zeros.append(id_df, ignore_index=True)
+        data_array = id_df[seq_cols].values
+        num_elements = data_array.shape[0]
+        lstm_array = []
+        for start, stop in zip(range(0, num_elements - seq_length), range(seq_length, num_elements)):
+            lstm_array.append(data_array[start:stop, :])
+        return np.array(lstm_array)
+
+    def gen_label(self, id_df, seq_length, seq_cols, label):
+        """
+        Generate output labels that will be used for validation using training.
+        id_df : Dataframe for specific Engine Id
+        seq_length : The window of time in history to be fed into the network
+        seq_cols: Features in dataframe to be included in training
+        label: output label to be included in the y_dataset used for evaluation.
+               this is essentially the label that model wll be trying to predict.
+        """
+
+        df_zeros = pd.DataFrame(np.zeros((seq_length - 1, id_df.shape[1])), columns=id_df.columns)
+        id_df = df_zeros.append(id_df, ignore_index=True)
+        data_array = id_df[seq_cols].values
+        num_elements = data_array.shape[0]
+        y_label = []
+        for start, stop in zip(range(0, num_elements - seq_length), range(seq_length, num_elements)):
+            y_label.append(id_df[label][stop])
+        return np.array(y_label)
