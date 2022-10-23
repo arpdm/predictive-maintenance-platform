@@ -5,7 +5,7 @@ import pandas as pd
 from pandas import DataFrame
 
 
-class EnigineData:
+class EngineData:
     def __init__(self):
         print("Process data for NASA's engines run-to-failure datasets")
 
@@ -82,6 +82,7 @@ class EnigineData:
         self.df_w_test = pd.DataFrame(data=self.w_test, columns=self.w_var_names)
         self.df_w_train = pd.DataFrame(data=self.w_dev, columns=self.w_var_names)
 
+        # We want to add Cycle, RUL and id to each dataframe category so we can study the data easier before model building and training
         self.df_x_s_train["cycle"] = self.df_aux_train["cycle"].values
         self.df_x_s_train["RUL"] = self.df_rul_train.values
         self.df_x_s_train["id"] = self.df_aux_train["unit"].values
