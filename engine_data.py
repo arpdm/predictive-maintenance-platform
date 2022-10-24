@@ -2,6 +2,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
+from sklearn import preprocessing
 from pandas import DataFrame
 
 
@@ -151,3 +152,37 @@ class EngineData:
         for start, stop in zip(range(0, num_elements - seq_length), range(seq_length, num_elements)):
             y_label.append(id_df[label][stop])
         return np.array(y_label)
+
+    def add_labels_to_dataset(
+        self,
+        data_frame,
+        failure_in_w_cycles_1=30,
+        failure_in_w_cycles_2=15,
+        label_1_name="label1",
+        label_2_name="label2",
+    ):
+        """
+        Description: Generate label columns for training data
+        "label1" is used binary clasification, while trying to answer the question:
+        is a specific engine going to fail within w1 cycles?
+        """
+
+        w1 = failure_in_w_cycles_1
+        w0 = failure_in_w_cycles_2
+        data_frame[label_1_name] = np.where(data_frame["RUL"] <= w1, 1, 0)
+        data_frame[label_2_name] = data_frame[label_1_name]
+        data_frame.loc[data_frame["RUL"] <= w0, label_2_name] = 2
+        return data_frame
+
+    def normalize_dataset(self, data_frame, features_to_exclude=["id", "cycle", "RUL", "label1", "label2"]):
+        """
+        Description: Normalize the data using MinMax normalization
+        """
+        data_frame["cycle_norm"] = data_frame["cycle"]
+        cols_normalize = data_frame.columns.difference(features_to_exclude)
+        min_max_scaler = preprocessing.MinMaxScaler()
+        norm_train_df = pd.DataFrame(
+            min_max_scaler.fit_transform(data_frame[cols_normalize]), columns=cols_normalize, index=data_frame.index
+        )
+        join_df = data_frame[data_frame.columns.difference(cols_normalize)].join(norm_train_df)
+        data_frame = join_df.reindex(columns=data_frame.columns)
