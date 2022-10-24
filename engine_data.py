@@ -162,7 +162,7 @@ class EngineData:
         label_2_name="label2",
     ):
         """
-        Description: Generate label columns for training data
+        Description: Add label columns for dataframe
         "label1" is used binary clasification, while trying to answer the question:
         is a specific engine going to fail within w1 cycles?
         """
@@ -177,7 +177,9 @@ class EngineData:
     def normalize_dataset(self, data_frame, features_to_exclude=["id", "cycle", "RUL", "label1", "label2"]):
         """
         Description: Normalize the data using MinMax normalization
+        Inputs: List of features to exclude will ensure that data will not be normalized for those features.
         """
+        
         data_frame["cycle_norm"] = data_frame["cycle"]
         cols_normalize = data_frame.columns.difference(features_to_exclude)
         min_max_scaler = preprocessing.MinMaxScaler()
@@ -186,3 +188,4 @@ class EngineData:
         )
         join_df = data_frame[data_frame.columns.difference(cols_normalize)].join(norm_train_df)
         data_frame = join_df.reindex(columns=data_frame.columns)
+        return data_frame
