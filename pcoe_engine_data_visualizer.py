@@ -1,3 +1,10 @@
+"""
+    This class holds set of visualization functions specifically written for the PCoE Engine Run to Failure Dataset.
+    These functions are not actually used for training and development of the model. However, it provides useful visualization
+    for understanding the dataset better. Some of these functions are taken from the python workbook provided with the Dataset from 
+    NASA's website.
+"""
+
 import matplotlib
 import numpy as np
 import seaborn as sns
@@ -42,11 +49,11 @@ class PcoeEngingeVis:
 
     def plot_flight_classes(self):
         """
-        Plot the engine units and their corresponding fligth class to
-        findout the durations of each fligth based on the class
+        Plot the engine units and their corresponding flight class to
+        find out the durations of each flight based on the class
             Class 1 - Flight length (1-3) [h]
             Class 2 - Flight length (3-5) [h]
-            Class 3 - Fligth length (5-7) [h]
+            Class 3 - Flight length (5-7) [h]
         """
 
         plt.plot(self.ed.df_aux.unit, self.df_aux.Fc, "o")
@@ -58,7 +65,7 @@ class PcoeEngingeVis:
 
     def plot_df_single_color(self, data, variables, labels, size=12, labelsize=17, name=None):
         """
-        Generic utility function to generate plots on variaus data frames for dataset
+        Generic utility function to generate plots on various data frames for dataset
         Note: This function is taken from sample notebook provided by the dataset itself.
         """
 
@@ -87,7 +94,7 @@ class PcoeEngingeVis:
 
     def plot_df_color_per_unit(self, data, variables, labels, size=7, labelsize=17, option="Time", name=None):
         """
-        Generic utility function to generate plots on variaus data frames overlayed in one plot
+        Generic utility function to generate plots on various data frames overladed in one plot
         Note: This function is taken from sample notebook provided by the dataset itself.
         """
 
@@ -192,7 +199,7 @@ class PcoeEngingeVis:
     def plot_health_states_for_all_engines(self):
         self.plot_df_color_per_unit(self.ed.df_aux, ["hs"], [r"$h_s$ [-]"], option="cycle")
 
-    def generate_flight_profle_single_unit_single_cycle(self, engine_unit, cycle):
+    def generate_flight_profile_single_unit_single_cycle(self, engine_unit, cycle):
         """
         Generate flight profile for one unit based on scenario-descriptor operating conditions
         """
@@ -211,7 +218,7 @@ class PcoeEngingeVis:
 
     def generate_flight_envelope(self):
         """
-        Generate flight evelope for each engine class.
+        Generate flight envelope for each engine class.
         Note: This function is taken from sample notebook provided by the dataset itself.
         """
 

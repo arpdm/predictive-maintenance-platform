@@ -71,7 +71,11 @@ class EngineData:
         self.generate_training_and_test_dataframes()
 
     def generate_training_and_test_dataframes(self):
-        """ """
+        """
+        This data frames are generated for testing and training processes.
+        We also add few columns to the sensor reading frame, since that is the data frame
+        that will used mainly for training and prediction.
+        """
         self.df_rul_train = pd.DataFrame(data=self.y_rul_dev, columns=["RUL"])
         self.df_rul_test = pd.DataFrame(data=self.y_rul_test, columns=["RUL"])
         self.df_x_s_train = pd.DataFrame(data=self.x_s_dev, columns=self.x_s_var_names)
@@ -83,7 +87,8 @@ class EngineData:
         self.df_w_test = pd.DataFrame(data=self.w_test, columns=self.w_var_names)
         self.df_w_train = pd.DataFrame(data=self.w_dev, columns=self.w_var_names)
 
-        # We want to add Cycle, RUL and id to each dataframe category so we can study the data easier before model building and training
+        # We want to add Cycle, RUL and id to each dataframe category so we can study
+        # the data easier before model building and training
         self.df_x_s_train["cycle"] = self.df_aux_train["cycle"].values
         self.df_x_s_train["RUL"] = self.df_rul_train.values
         self.df_x_s_train["id"] = self.df_aux_train["unit"].values
@@ -203,13 +208,15 @@ class EngineData:
             df[df["RUL"] <= df["RUL"].min() + horizon]
         return df
 
-    def generate_lstm_x_y_inputs(
+    def generate_x_y_model_inputs(
         self, data_frame, y_label="label1", x_columns_to_exclude=["RUL", "label1", "label2", "cycle", "id"], window=50
     ):
         """
         Keras LSTM layers expect an input in the shape of a numpy array of 3 dimensions (samples, time steps, features) = [N x T x D]
         where samples is the number of training sequences, time steps is the look back window or sequence length and features
         is the number of features of each sequence at each time step.
+
+        Window: is the timesteps(sequence length) of the input
         """
 
         df_x = data_frame[data_frame.columns]
