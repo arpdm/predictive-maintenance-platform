@@ -209,7 +209,11 @@ class EngineData:
         return df
 
     def generate_x_y_model_inputs(
-        self, data_frame, y_label="label1", x_columns_to_exclude=["RUL", "label1", "label2", "cycle", "id"], window=50
+        self,
+        data_frame,
+        y_label=["RUL", "label1", "label2"],
+        x_columns_to_exclude=["RUL", "label1", "label2", "cycle", "id"],
+        window=50,
     ):
         """
         Keras LSTM layers expect an input in the shape of a numpy array of 3 dimensions (samples, time steps, features) = [N x T x D]
@@ -224,6 +228,6 @@ class EngineData:
         df_x = df_x.drop(columns=x_columns_to_exclude)
 
         x = np.array(list(self.gen_sequence(df_x, window, df_x.columns)))
-        y = np.array(list(self.gen_label(df_y, window, df_y.columns, y_label)))
+        y = np.array(list(self.gen_label(df_y, window, df_y.columns, "label1")))
 
         return (x, y)
