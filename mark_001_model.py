@@ -87,12 +87,12 @@ class Mark001Model:
         filename.close()
 
         # serialize model to JSON
-        model_json = model.to_json()
+        model_json = self.model.to_json()
         with open(f"{path}/{model_name}.json", "w") as json_file:
             json_file.write(model_json)
 
         # serialize weights to HDF5
-        model.save_weights(f"{path}/{model_name}.h5")
+        self.model.save_weights(f"{path}/{model_name}.h5")
         print("Saved model to disk")
 
     def load_model(self, model_path):
@@ -135,7 +135,7 @@ class Mark001Model:
         # Test prediction report
         print("\nAccuracy of model on test data = " + str(accuracy_score(y_true, y_pred)))
         print("\nRecall = " + str(recall))
-        print("\MAE Loss = " + str(test_mae_loss))
+        print("\nMAE Loss = " + str(test_mae_loss))
 
         return (y_pred, y_true, cm)
 
@@ -144,7 +144,7 @@ class Mark001Model:
         Makes predictions that are not part of training or test datasets.
         Outputs : Y Predicted
         """
-
+        
         # Since tensorflow down not have binary prediction anymore, we are going to put a checkpoint.
         # If the value is above 0.5, set it as 1 otherwise 0.
         return (self.model.predict(x) > 0.5).astype("int32")

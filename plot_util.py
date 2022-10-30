@@ -63,7 +63,7 @@ class PlotUtil:
 
     def generate_heat_map(self, data_frame):
         plt.figure(figsize=(10, 7))
-        sn.heatmap(data_frame, annot=True)
+        sns.heatmap(data_frame, annot=True)
 
     def generate_about_to_fail_graphs(self, y_true, y_pred):
         """
