@@ -49,7 +49,7 @@ class EngineData:
             self.t_var_names = list(np.array(self.t_var_names, dtype="U20"))
             self.aux_var_names = list(np.array(self.aux_var_names, dtype="U20"))
 
-        # Create complete development and test set of each varaible type
+        # Create complete development and test set of each variable type
         self.w = np.concatenate((self.w_dev, self.w_test), axis=0)
         self.x_s = np.concatenate((self.x_s_dev, self.x_s_test), axis=0)
         self.x_v = np.concatenate((self.x_v_dev, self.x_v_test), axis=0)
@@ -71,7 +71,7 @@ class EngineData:
         self.generate_training_and_test_dataframes()
 
     def generate_training_and_test_dataframes(self):
-
+        """ """
         self.df_rul_train = pd.DataFrame(data=self.y_rul_dev, columns=["RUL"])
         self.df_rul_test = pd.DataFrame(data=self.y_rul_test, columns=["RUL"])
         self.df_x_s_train = pd.DataFrame(data=self.x_s_dev, columns=self.x_s_var_names)
@@ -130,6 +130,7 @@ class EngineData:
         data_array = id_df[seq_cols].values
         num_elements = data_array.shape[0]
         lstm_array = []
+
         for start, stop in zip(range(0, num_elements - seq_length), range(seq_length, num_elements)):
             lstm_array.append(data_array[start:stop, :])
         return np.array(lstm_array)
@@ -149,6 +150,7 @@ class EngineData:
         data_array = id_df[seq_cols].values
         num_elements = data_array.shape[0]
         y_label = []
+
         for start, stop in zip(range(0, num_elements - seq_length), range(seq_length, num_elements)):
             y_label.append(id_df[label][stop])
         return np.array(y_label)
@@ -162,8 +164,8 @@ class EngineData:
         label_2_name="label2",
     ):
         """
-        Description: Add label columns for dataframe
-        "label1" is used binary clasification, while trying to answer the question:
+        Description: Add label columns for data frame
+        "label1" is used binary classification, while trying to answer the question:
         is a specific engine going to fail within w1 cycles?
         """
 
@@ -179,7 +181,7 @@ class EngineData:
         Description: Normalize the data using MinMax normalization
         Inputs: List of features to exclude will ensure that data will not be normalized for those features.
         """
-        
+
         data_frame["cycle_norm"] = data_frame["cycle"]
         cols_normalize = data_frame.columns.difference(features_to_exclude)
         min_max_scaler = preprocessing.MinMaxScaler()
@@ -189,3 +191,32 @@ class EngineData:
         join_df = data_frame[data_frame.columns.difference(cols_normalize)].join(norm_train_df)
         data_frame = join_df.reindex(columns=data_frame.columns)
         return data_frame
+
+    def generate_data_frame_for_specific_engine(self, data_frame, engine_id=1, horizon=0):
+        """
+        Description: Generate dataframe with specified engine id. If horizon is other than zero,
+                     filter data with onl RUL that is less than the specified horizon since horizon.
+        """
+
+        df = data_frame[data_frame["id"] == engine_id]
+        if horizon != 0:
+            df[df["RUL"] <= df["RUL"].min() + horizon]
+        return df
+
+    def generate_lstm_x_y_inputs(
+        self, data_frame, y_label="label1", x_columns_to_exclude=["RUL", "label1", "label2", "cycle", "id"], window=50
+    ):
+        """
+        Keras LSTM layers expect an input in the shape of a numpy array of 3 dimensions (samples, time steps, features) = [N x T x D]
+        where samples is the number of training sequences, time steps is the look back window or sequence length and features
+        is the number of features of each sequence at each time step.
+        """
+
+        df_x = data_frame[data_frame.columns]
+        df_y = data_frame.filter(y_label)
+        df_x = df_x.drop(columns=x_columns_to_exclude)
+
+        x = np.array(list(self.gen_sequence(df_x, window, df_x.columns)))
+        y = np.array(list(self.gen_label(df_y, window, df_y.columns, y_label)))
+
+        return (x, y)
