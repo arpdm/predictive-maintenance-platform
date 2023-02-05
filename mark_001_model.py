@@ -14,14 +14,17 @@ import pandas as pd
 
 DENSE_ACTIVATION = "sigmoid"
 LOSS = "binary_crossentropy"
-
+OPTIMIZER = "adam"
 
 class Mark001Model:
     def __init__(self):
         print("Different PdM model collection to be tested.")
         self.model = None
+        self.optimizer = None
 
-    def create_binary_classifier_model(self, window, features, units_first_layer, units_second_layer, dropout_rate, optimizer_hyperparams):
+    def create_binary_classifier_model(
+        self, window, features, units_first_layer, units_second_layer, dropout_rate, optimizer_hyperparams
+    ):
         """
         LSTM has long-term memory, which is needed for predicting anomalies in the times-series
         Dropout:
@@ -35,20 +38,26 @@ class Mark001Model:
             The loss function used in this model is binary_crossentropy since we only have two classes of 1 and 0s.
         Optimizer:
             The optimizer essentially defines how to adjust neuron weights in response to inaccurate predictions.
-            In this case, we use Adam optimizer.
-            Adam is used since it learns fast and stable over wide range of learning rates and requires relatively low memory.
-            The default learning rate used by Keras is 0.001.
+            In this case, we use AdamW optimizer.
+            AdamW is used since it learns fast and stable over wide range of learning rates and requires relatively low memory.
+            The default learning rate used by Keras is 0.001. AdamW is not part of core TensorFlow so we are using TensorFlow Addons.
         """
-        
-        OPTIMIZER = tfa.optimizers.AdamW(weight_decay= optimizer_hyperparams["weight_decay"], learning_rate=optimizer_hyperparams["learning_rate"], beta_1= optimizer_hyperparams["beta_1"], beta_2=optimizer_hyperparams["beta_2"], epsilon=optimizer_hyperparams["epsilon"])
-        
+
+        self.optimizer = tfa.optimizers.AdamW(
+            weight_decay=optimizer_hyperparams["weight_decay"],
+            learning_rate=optimizer_hyperparams["learning_rate"],
+            beta_1=optimizer_hyperparams["beta_1"],
+            beta_2=optimizer_hyperparams["beta_2"],
+            epsilon=optimizer_hyperparams["epsilon"],
+        )
+
         mark_001 = Sequential()
         mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=True))
         mark_001.add(Dropout(dropout_rate))
         mark_001.add(LSTM(units=units_second_layer, return_sequences=False))
         mark_001.add(Dropout(dropout_rate))
         mark_001.add(Dense(units=1, activation=DENSE_ACTIVATION))
-        mark_001.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=["accuracy"])
+        mark_001.compile(loss=LOSS, optimizer=self.optimizer, metrics=["accuracy"])
         mark_001.summary()
         self.model = mark_001
         return mark_001
@@ -103,7 +112,7 @@ class Mark001Model:
         Loads existing model based on path provided.
         First loads the json file and gets the model from it.
         The loads the trained weights from saved h5 file to the model.
-        The model is the compiled using LOSS function and OPTIMIZER
+        The model is then compiled using LOSS function and OPTIMIZER
         """
         json_file = open(f"{model_path}.json", "r")
         loaded_model_json = json_file.read()
@@ -147,7 +156,7 @@ class Mark001Model:
         Makes predictions that are not part of training or test datasets.
         Outputs : Y Predicted
         """
-        
+
         # Since tensorflow down not have binary prediction anymore, we are going to put a checkpoint.
         # If the value is above 0.5, set it as 1 otherwise 0.
         return (self.model.predict(x) > 0.5).astype("int32")
