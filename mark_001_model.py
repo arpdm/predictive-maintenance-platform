@@ -5,13 +5,13 @@ from keras.models import model_from_json
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
 from pandas import DataFrame
 
+import tensorflow_addons as tfa
 import pickle
 import keras
 import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-OPTIMIZER = "adam"
 DENSE_ACTIVATION = "sigmoid"
 LOSS = "binary_crossentropy"
 
@@ -21,7 +21,7 @@ class Mark001Model:
         print("Different PdM model collection to be tested.")
         self.model = None
 
-    def create_binary_classifier_model(self, window, features, units_first_layer, units_second_layer, dropout_rate):
+    def create_binary_classifier_model(self, window, features, units_first_layer, units_second_layer, dropout_rate, optimizer_hyperparams):
         """
         LSTM has long-term memory, which is needed for predicting anomalies in the times-series
         Dropout:
@@ -39,6 +39,9 @@ class Mark001Model:
             Adam is used since it learns fast and stable over wide range of learning rates and requires relatively low memory.
             The default learning rate used by Keras is 0.001.
         """
+        
+        OPTIMIZER = tfa.optimizers.AdamW(weight_decay= optimizer_hyperparams["weight_decay"], learning_rate=optimizer_hyperparams["learning_rate"], beta_1= optimizer_hyperparams["beta_1"], beta_2=optimizer_hyperparams["beta_2"], epsilon=optimizer_hyperparams["epsilon"])
+        
         mark_001 = Sequential()
         mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=True))
         mark_001.add(Dropout(dropout_rate))
