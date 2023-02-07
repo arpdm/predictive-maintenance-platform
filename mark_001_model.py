@@ -55,7 +55,6 @@ class Mark001Model:
             )
         else:
             self.optimizer = tf.optimizers.Adam(
-                weight_decay=optimizer_hyperparams["weight_decay"],
                 learning_rate=optimizer_hyperparams["learning_rate"],
                 beta_1=optimizer_hyperparams["beta_1"],
                 beta_2=optimizer_hyperparams["beta_2"],
