@@ -142,7 +142,7 @@ class Mark001Model:
         This function tests the model by making predictions using s and y test datasets.
         It then performs some analysis by comparing true and predicted values.
 
-        Outputs: Predicted Y values, True Y values, confusion matrix
+        Outputs: Predicted Y values, True Y values, confusion matrix, accuracy
         """
         # Since tensorflow down not have binary prediction anymore, we are going to put a checkpoint.
         # If the value is above 0.5, set it as 1 otherwise 0.
@@ -159,7 +159,7 @@ class Mark001Model:
         print("\nRecall = " + str(recall))
         print("\nMAE Loss = " + str(test_mae_loss))
 
-        return (y_pred, y_true, cm)
+        return (y_pred, y_true, cm, accuracy)
 
     def predict(self, x):
         """
