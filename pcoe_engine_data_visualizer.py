@@ -56,7 +56,7 @@ class PcoeEngingeVis:
             Class 3 - Flight length (5-7) [h]
         """
 
-        plt.plot(self.ed.df_aux.unit, self.df_aux.Fc, "o")
+        plt.plot(self.ed.df_aux.unit, self.ed.df_aux.Fc, "o")
         plt.tick_params(axis="x", labelsize=PLOT_LBL_SIZE)
         plt.tick_params(axis="y", labelsize=PLOT_LBL_SIZE)
         plt.xlabel("Unit # [-]", fontsize=PLOT_LBL_SIZE)
@@ -204,7 +204,7 @@ class PcoeEngingeVis:
         Generate flight profile for one unit based on scenario-descriptor operating conditions
         """
 
-        df_W_u = self.df_w.loc[(self.ed.df_aux.unit == engine_unit) & (self.ed.df_aux.cycle == cycle)]
+        df_W_u = self.ed.df_w.loc[(self.ed.df_aux.unit == engine_unit) & (self.ed.df_aux.cycle == cycle)]
         df_W_u.reset_index(inplace=True, drop=True)
         labels = [
             "Altitude [ft]",
@@ -272,7 +272,7 @@ class PcoeEngingeVis:
 
     def generate_engine_health_parameter_graphs(self):
         labels = self.ed.t_var_names
-        self.plot_df_single_color(self.df_t, self.ed.t_var_names, labels)
+        self.plot_df_single_color(self.ed.df_t, self.ed.t_var_names, labels)
 
     def generate_hpt_eff_over_cycles_all_engines(self):
         self.plot_df_color_per_unit(self.ed.df_t, ["HPT_eff_mod"], [r"HPT Eff. - $\theta$ [-]"], size=7, option="cycle")
