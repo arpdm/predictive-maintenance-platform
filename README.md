@@ -5,7 +5,7 @@ At the moment, this is a prototype and it doesn't include the full A-Z pipelin.
 
 ## How to run the code
 
-To run the latest working version, open the **PdM_NASA_ENGINES_003** colab notebook in google colab.
+To run the latest working version, open the **experiments* colab notebook in google colab.
 
 The colab file connects to Google Drive where the data are saved and the repository is cloned. The colab file grabs the classes from there.
 So every time there are changes made to the repo, from terminal inside google colab, pull the chages to where the repo is cloned in google drive.

@@ -16,6 +16,7 @@ DENSE_ACTIVATION = "sigmoid"
 LOSS = "binary_crossentropy"
 OPTIMIZER = "adam"
 
+
 class Mark001Model:
     def __init__(self):
         print("Different PdM model collection to be tested.")
@@ -23,7 +24,14 @@ class Mark001Model:
         self.optimizer = None
 
     def create_binary_classifier_model(
-        self, window, features, units_first_layer, units_second_layer, dropout_rate, optimizer_hyperparams,adam_w_enabled = False
+        self,
+        window,
+        features,
+        units_first_layer,
+        units_second_layer,
+        dropout_rate,
+        optimizer_hyperparams,
+        adam_w_enabled=False,
     ):
         """
         LSTM has long-term memory, which is needed for predicting anomalies in the times-series
