@@ -188,13 +188,14 @@ class EngineData:
         """
 
         data_frame["cycle_norm"] = data_frame["cycle"]
-        cols_normalize = data_frame.columns.difference(features_to_exclude)
+        data_frame.columns = data_frame.columns.astype(str)
+        cols_normalize = data_frame.columns.difference(features_to_exclude).astype(str)
         min_max_scaler = preprocessing.MinMaxScaler()
         norm_train_df = pd.DataFrame(
-            min_max_scaler.fit_transform(data_frame[cols_normalize]), columns=cols_normalize, index=data_frame.index
+            min_max_scaler.fit_transform(data_frame[cols_normalize]), columns=cols_normalize.astype(str), index=data_frame.index
         )
         join_df = data_frame[data_frame.columns.difference(cols_normalize)].join(norm_train_df)
-        data_frame = join_df.reindex(columns=data_frame.columns)
+        data_frame = join_df.reindex(columns=data_frame.columns.astype(str))
         return data_frame
 
     def generate_data_frame_for_specific_engine(self, data_frame, engine_id=1, horizon=0):
