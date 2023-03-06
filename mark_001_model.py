@@ -71,7 +71,9 @@ class Mark001Model:
 
         mark_001 = Sequential()
         mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=True))
-        mark_001.add(Dropout(dropout_rate))
+        mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=False))
+        mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=False))
+        mark_001.add(LSTM(input_shape=(window, features), units=units_first_layer, return_sequences=False))
         mark_001.add(LSTM(units=units_second_layer, return_sequences=False))
         mark_001.add(Dropout(dropout_rate))
         mark_001.add(Dense(units=1, activation=DENSE_ACTIVATION))
