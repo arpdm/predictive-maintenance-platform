@@ -86,6 +86,8 @@ class EngineData:
         self.df_aux_train = pd.DataFrame(data=self.aux_dev, columns=self.aux_var_names)
         self.df_w_test = pd.DataFrame(data=self.w_test, columns=self.w_var_names)
         self.df_w_train = pd.DataFrame(data=self.w_dev, columns=self.w_var_names)
+        self.df_t_train = pd.DataFrame(data=self.t_dev, columns=self.t_var_names)
+        self.df_t_test = pd.DataFrame(data=self.t_test, columns=self.t_var_names)
 
         # We want to add Cycle, RUL and id to each dataframe category so we can study
         # the data easier before model building and training
