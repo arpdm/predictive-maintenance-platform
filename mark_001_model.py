@@ -140,6 +140,7 @@ class Mark001Model:
         # load weights into new model
         self.model.load_weights(f"{model_path}.h5")
         self.model.compile(loss=LOSS, optimizer=OPTIMIZER, metrics=["accuracy"])
+        return self.model
 
     def evaluate_model(self, x_train, y_train, batch_size):
         scores = self.model.evaluate(x_train, y_train, verbose=1, batch_size=batch_size)
